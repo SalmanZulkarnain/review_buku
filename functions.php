@@ -1,12 +1,11 @@
 <?php 
-
 require 'db.php';
 
 function insertBook() {
     global $db;
     
     $pesan = '';
-    if(isset($_POST['submit'])) {
+    if (isset($_POST['submit'])) {
         $judul = $_POST['judul'];
         $ulasan = $_POST['ulasan'];
         $tahun_terbit = $_POST['tahun_terbit'];
@@ -18,13 +17,20 @@ function insertBook() {
         $target_file = $target_dir . basename($_FILES["gambar"]["name"]);
 
         $check = getimagesize($_FILES["gambar"]["tmp_name"]);
-        if($check !== false) {
+        if ($check !== false) {
             if (move_uploaded_file($_FILES["gambar"]["tmp_name"], $target_file)) {
                 $gambar = $target_file;
             
-                $query = "INSERT INTO review_buku (judul, ulasan, tahun_terbit, penulis, penerbit, harga, gambar) VALUES ('$judul', '$ulasan', '$tahun_terbit', '$penulis', '$penerbit', '$harga', '$gambar')";
+                $stmt = $db->prepare("INSERT INTO review_buku (judul, ulasan, tahun_terbit, penulis, penerbit, harga, gambar) VALUES (:judul, :ulasan, :tahun_terbit, :penulis, :penerbit, :harga, :gambar)");
+                $stmt->bindParam(':judul', $judul, SQLITE3_TEXT);
+                $stmt->bindParam(':ulasan', $ulasan, SQLITE3_TEXT);
+                $stmt->bindParam(':tahun_terbit', $tahun_terbit, SQLITE3_TEXT);
+                $stmt->bindParam(':penulis', $penulis, SQLITE3_TEXT);
+                $stmt->bindParam(':penerbit', $penerbit, SQLITE3_TEXT);
+                $stmt->bindParam(':gambar', $gambar, SQLITE3_TEXT);
+                $stmt->bindParam(':harga', $harga, SQLITE3_INTEGER);
                 
-                if ($db->query($query)) {
+                if ($stmt->execute()) {
                     header('Location: index.php');
                     exit;
                 } else {
@@ -60,8 +66,10 @@ function ambilBook() {
     }
 
     $id = $_GET['edit'];
-    $ambil = $db->query("SELECT * FROM review_buku WHERE id = '$id'");
-    
+    $stmt = $db->prepare("SELECT * FROM review_buku WHERE id = :id");
+    $stmt->bindParam(':id', $id, SQLITE3_INTEGER);
+    $ambil = $stmt->execute();
+
     return $ambil->fetchArray(SQLITE3_ASSOC);
 }   
 
@@ -73,7 +81,9 @@ function readBook() {
     }
 
     $id = $_GET['detail'];
-    $ambil = $db->query("SELECT * FROM review_buku WHERE id = '$id'");
+    $stmt = $db->prepare("SELECT * FROM review_buku WHERE id = :id");
+    $stmt->bindParam(':id', $id, SQLITE3_INTEGER);
+    $ambil = $stmt->execute();
     
     return $ambil->fetchArray(SQLITE3_ASSOC);
 }
@@ -81,21 +91,33 @@ function readBook() {
 function updateBook() {
     global $db;
 
-    if(isset($_POST['id'])) {
+    if (isset($_POST['id'])) {
         $id = $_POST['id'];
         $judul = $_POST['judul'];
+        $penerbit = $_POST['penerbit'];
+        $penulis = $_POST['penulis'];
         $ulasan = $_POST['ulasan'];
         $tahun_terbit = $_POST['tahun_terbit'];
+        $harga = $_POST['harga'];
 
         $formattedDate = DateTime::createFromFormat('d/m/Y', $tahun_terbit);
 
         if ($formattedDate) {
             $tahun_terbit = $formattedDate->format('Y-m-d');
         } 
-        
-        if (!empty($judul)) {
-            $db->query("UPDATE tasks SET judul = '$judul', ulasan = '$ulasan', tahun_terbit = '$tahun_terbit' WHERE id = '$id'");
+
+        $stmt = $db->prepare("UPDATE review_buku SET judul = :judul, penerbit = :penerbit, penulis = :penulis, ulasan = :ulasan, tahun_terbit = :tahun_terbit, harga = :harga WHERE id = :id");
+        $stmt->bindParam(':id', $id, SQLITE3_INTEGER);
+        $stmt->bindParam(':judul', $judul, SQLITE3_TEXT);
+        $stmt->bindParam(':ulasan', $ulasan, SQLITE3_TEXT);
+        $stmt->bindParam(':tahun_terbit', $tahun_terbit, SQLITE3_TEXT);
+        $stmt->bindParam(':penulis', $penulis, SQLITE3_TEXT);
+        $stmt->bindParam(':penerbit', $penerbit, SQLITE3_TEXT);
+        $stmt->bindParam(':harga', $harga, SQLITE3_INTEGER);
+
+        if ($stmt->execute()) {
             header('Location: index.php');
+            exit;
         }
     }
 }
@@ -103,10 +125,14 @@ function updateBook() {
 function deleteBook() {
     global $db;
 
-    if(isset($_GET['delete'])) {
+    if (isset($_GET['delete'])) {
         $id = $_GET['delete'];
-        $db->query("DELETE FROM review_buku WHERE id = '$id'");
-        header('Location: index.php');
-        exit;
+        $stmt = $db->prepare("DELETE FROM review_buku WHERE id = :id");
+        $stmt->bindParam(':id', $id, SQLITE3_INTEGER);  
+
+        if ($stmt->execute()) {
+            header('Location: index.php');
+            exit;
+        }
     }
 }

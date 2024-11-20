@@ -32,7 +32,7 @@ Ini adalah aplikasi web berbasis PHP sederhana untuk mengelola review buku. Peng
 
 > **JIKA ADA KESALAHAN, BUG, DAN FITUR BARU BERIKAN KOMENTAR KALIAN DI ``` ISSUES ``` TAB**
 
-!["View All"](review.png)
-!["Read One"](review2.png)
-!["Add Book"](review3.png)
-!["Edit Book"](review4.png)
+!["View All"](screenshot/review.png)
+!["Read One"](screenshot/review2.png)
+!["Add Book"](screenshot/review3.png)
+!["Edit Book"](screenshot/review4.png)

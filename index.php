@@ -1,12 +1,12 @@
 <?php
-
 require 'db.php';
 require 'functions.php';
 
 $pesan = '';
+$film_edit = null;
+$book_edit = null;
 
 $books = viewBook();
-
 deleteBook();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -22,11 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$film_edit = null;
 if (isset($_GET['edit'])) {
     $film_edit = ambilBook();
 }
-$book_edit = null;
+
 if (isset($_GET['detail'])) {
     $book_edit = readBook();
 }
@@ -40,12 +39,11 @@ if (isset($_GET['detail'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>REVIEW BUKU</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style/style.css">
 </head>
 
 <body>
     <div class="container">
-
         <!-- MODAL CONTAINER -->
         <div class="modal-container">
             <!-- TAMBAH -->
@@ -59,7 +57,6 @@ if (isset($_GET['detail'])) {
                         <?php if ($film_edit): ?>
                             <input type="hidden" name="id">
                         <?php endif; ?>
-
                         <div class="input-group">
                             <input type="text" name="judul" placeholder="Masukkan nama buku">
                         </div>
@@ -99,7 +96,6 @@ if (isset($_GET['detail'])) {
                             <?php if ($film_edit): ?>
                                 <input type="hidden" name="id" value="<?php echo isset($film_edit['id']); ?>">
                             <?php endif; ?>
-
                             <div class="input-group">
                                 <input type="text" name="judul" value="<?php echo $film_edit['judul']; ?>" placeholder="Masukkan judul buku">
                             </div>
@@ -116,9 +112,6 @@ if (isset($_GET['detail'])) {
                                 <input type="date" name="tahun_terbit" value="<?php echo $film_edit['tahun_terbit']; ?>" placeholder="Masukkan tanggal terbit">
                             </div>
                             <div class="input-group">
-                                <input type="file" name="gambar" accept="image/*">
-                            </div>
-                            <div class="input-group">
                                 <input type="submit" name="submit" value="Update">
                             </div>
                         </form>
@@ -126,6 +119,7 @@ if (isset($_GET['detail'])) {
                     </div>
                 </div>
             <?php endif; ?>
+            
             <?php if (!empty($pesan)): ?>
                 <p style="color: red; margin-bottom: 20px;"><?php echo $pesan; ?></p>
             <?php endif; ?>
