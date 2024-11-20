@@ -94,10 +94,10 @@ function updateBook() {
     if (isset($_POST['id'])) {
         $id = $_POST['id'];
         $judul = $_POST['judul'];
-        $penerbit = $_POST['penerbit'];
-        $penulis = $_POST['penulis'];
         $ulasan = $_POST['ulasan'];
         $tahun_terbit = $_POST['tahun_terbit'];
+        $penulis = $_POST['penulis'];
+        $penerbit = $_POST['penerbit'];
         $harga = $_POST['harga'];
 
         $formattedDate = DateTime::createFromFormat('d/m/Y', $tahun_terbit);
